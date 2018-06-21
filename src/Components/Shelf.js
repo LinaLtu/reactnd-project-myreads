@@ -9,15 +9,14 @@ class Shelf extends React.Component {
         <h2 className="bookshelf-title">{this.props.title}</h2>
         <div className="bookshelf-books">
           <ol className="books-grid">
-            <li>
-              <BookItem bookshelf={this.props.bookshelf} />
-            </li>
-            <li>
-              <BookItem bookshelf={this.props.bookshelf} />
-            </li>
-            <li>
-              <BookItem bookshelf={this.props.bookshelf} />
-            </li>
+            {this.props.books.map(book => (
+              <li key={book.id}>
+                <BookItem
+                  bookInfo={book}
+                  onShelfChange={this.props.handleShelfChanger}
+                />
+              </li>
+            ))}
           </ol>
         </div>
       </div>

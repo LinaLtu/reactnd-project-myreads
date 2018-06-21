@@ -7,7 +7,6 @@ import { getAll } from "./BooksAPI.js";
 
 class BooksApp extends React.Component {
   state = {
-    bookshelf: "currentlyReading",
     currentlyReading: [],
     read: [],
     wantToRead: [],
@@ -24,21 +23,31 @@ class BooksApp extends React.Component {
     let currentlyReading = [];
     let read = [];
     let wantToRead = [];
+    console.log("Read array ", read);
     getAll().then(books => {
       books.forEach(book => {
         if (book.shelf === "read") {
+          console.log("Before pushing to a read array ", read);
           read.push(book);
-          this.setState({ read });
         } else if (book.shelf === "currentlyReading") {
           currentlyReading.push(book);
-          this.setState({ currentlyReading });
         } else if (book.shelf === "wantToRead") {
           wantToRead.push(book);
-          this.setState({ wantToRead });
         }
       });
+      this.setState({
+        currentlyReading,
+        read,
+        wantToRead
+      });
+      console.log("state ", this.state);
     });
-    console.log("state ", this.state);
+  }
+
+  handleShelfChanger(bookId) {
+    console.log("Book id ", bookId);
+    // this.setState();
+    // console.log("CIAAAO");
   }
 
   render() {
@@ -51,9 +60,21 @@ class BooksApp extends React.Component {
             <div className="list-books-title">
               <h1>MyReads</h1>
             </div>
-            <Shelf bookshelf={this.state.bookshelf} title="Currently Reading" />
-            <Shelf bookshelf={this.state.read} title="Read" />
-            <Shelf bookshelf={this.state.bookshelf} title="Wnat to Read" />
+            <Shelf
+              books={this.state.currentlyReading}
+              title="Currently Reading"
+              handleShelfChanger={this.handleShelfChanger}
+            />
+            <Shelf
+              books={this.state.read}
+              title="Read"
+              handleShelfChanger={this.handleShelfChanger}
+            />
+            <Shelf
+              books={this.state.wantToRead}
+              title="Wnat to Read"
+              handleShelfChanger={this.handleShelfChanger}
+            />
 
             <div className="list-books-content">
               <div />
