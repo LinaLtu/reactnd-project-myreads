@@ -23,7 +23,11 @@ class BookItem extends React.Component {
           />
         </div>
         <div className="book-title">{this.props.bookInfo.title}</div>
-        <div className="book-authors">Harper Lee</div>
+        {this.props.bookInfo.authors.map(author => (
+          <div className="book-authors" key={author}>
+            {author}
+          </div>
+        ))}
       </div>
     );
   }

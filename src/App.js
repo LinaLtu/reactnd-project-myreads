@@ -72,7 +72,7 @@ class BooksApp extends React.Component {
             />
             <Shelf
               books={this.state.wantToRead}
-              title="Wnat to Read"
+              title="Want to Read"
               handleShelfChanger={this.handleShelfChanger}
             />
 
