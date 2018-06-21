@@ -45,8 +45,15 @@ class BooksApp extends React.Component {
   }
 
   handleShelfChanger(bookId) {
-    console.log("Book id ", bookId);
-    // this.setState();
+    console.log("Book id ", this.bookInfo.id);
+    //Set state on specific ID
+
+    // if (this.bookInfo.shelf === "currentlyReading") {
+    //   // this.setState({
+    //   //   currentlyReading
+    //   // });
+    //   // console.log(this.bookInfo.shelf);
+    // }
     // console.log("CIAAAO");
   }
 
