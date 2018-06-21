@@ -21,18 +21,24 @@ class BooksApp extends React.Component {
   };
 
   componentDidMount() {
-    console.log("Component did mount worked");
+    let currentlyReading = [];
     let read = [];
-    console.log("Read books ", read);
+    let wantToRead = [];
     getAll().then(books => {
       books.forEach(book => {
         if (book.shelf === "read") {
           read.push(book);
+          this.setState({ read });
+        } else if (book.shelf === "currentlyReading") {
+          currentlyReading.push(book);
+          this.setState({ currentlyReading });
+        } else if (book.shelf === "wantToRead") {
+          wantToRead.push(book);
+          this.setState({ wantToRead });
         }
       });
-      this.setState({ read });
-      console.log("From the state ", this.state.read);
     });
+    console.log("state ", this.state);
   }
 
   render() {

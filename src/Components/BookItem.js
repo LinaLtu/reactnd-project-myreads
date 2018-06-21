@@ -3,7 +3,6 @@ import BookShelfChanger from "./BookShelfChanger.js";
 
 class BookItem extends React.Component {
   render() {
-    console.log("From BookItem ", this.props.bookshelf);
     return (
       <div className="book">
         <div className="book-top">
