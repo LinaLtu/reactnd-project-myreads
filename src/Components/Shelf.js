@@ -1,11 +1,13 @@
 import React from "react";
+import BookShelfChanger from "./BookShelfChanger.js";
 import BookItem from "./BookItem.js";
 
-class Read extends React.Component {
+class Shelf extends React.Component {
   render() {
+    console.log("Props in Currently Reading", this.props.bookshelf);
     return (
       <div className="bookshelf">
-        <h2 className="bookshelf-title">Read</h2>
+        <h2 className="bookshelf-title">{this.props.title}</h2>
         <div className="bookshelf-books">
           <ol className="books-grid">
             <li>
@@ -24,4 +26,4 @@ class Read extends React.Component {
   }
 }
 
-export default Read;
+export default Shelf;
