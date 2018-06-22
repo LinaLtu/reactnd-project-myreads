@@ -17,6 +17,7 @@ class BookItem extends React.Component {
             }}
           />
           <BookShelfChanger
+            bookId={this.props.bookInfo.id}
             onSelectChange={event =>
               this.props.onShelfChange(
                 this.props.bookInfo.id,
