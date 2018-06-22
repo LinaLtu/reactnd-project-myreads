@@ -61,21 +61,23 @@ class BooksApp extends React.Component {
       console.log("This books is in currently reading");
       shelfOfSelectedBook = this.state.currentlyReading;
       this.moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf);
-      this.setState({ currentlyReading: shelfBookWillBeMovedTo });
+      // this.setState({ currentlyReading: shelfBookWillBeMovedTo });
     } else if (currentShelf === "read") {
       shelfOfSelectedBook = this.state.read;
       this.moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf);
-      this.setState({ read: shelfBookWillBeMovedTo });
+      // this.setState({ read: shelfBookWillBeMovedTo });
     } else if (currentShelf === "wantToRead") {
       shelfOfSelectedBook = this.state.wantToRead;
       this.moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf);
-      this.setState({ wantToRead: shelfBookWillBeMovedTo });
+      // this.setState({ wantToRead: shelfBookWillBeMovedTo });
     }
-
     console.log("This is the array of the current book: ", shelfOfSelectedBook);
+    function updateState(shelfBookWillBeMovedTo) {
+      console.log("From update the state ", shelfBookWillBeMovedTo);
+    }
   }
 
-  moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf) {
+  moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf, updateState) {
     let shelfBookWillBeMovedTo;
     let bookToChange = shelfOfSelectedBook.filter(
       bookById => bookById.id === bookId
@@ -87,7 +89,7 @@ class BooksApp extends React.Component {
     console.log("Book has been deleted", shelfWithoutSelectedBook);
 
     if (newShelf === "currentlyReading") {
-      console.log("Shelf the book will be moved to", shelfBookWillBeMovedTo);
+      console.log("Shelf the book will be moved to", shelfBookWillBeMovedTo;
       shelfBookWillBeMovedTo = this.state.currentlyReading;
     } else if (newShelf === "read") {
       shelfBookWillBeMovedTo = this.state.read;
@@ -97,6 +99,8 @@ class BooksApp extends React.Component {
 
     shelfBookWillBeMovedTo.push(bookToChange[0]);
     console.log("Book added to a new shelf ", shelfBookWillBeMovedTo);
+    updateState(shelfBookWillBeMovedTo);
+    // return shelfBookWillBeMovedTo;
   }
 
   render() {
