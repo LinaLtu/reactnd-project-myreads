@@ -6,18 +6,23 @@ import Search from "./Components/Search.js";
 import { getAll } from "./BooksAPI.js";
 
 class BooksApp extends React.Component {
-  state = {
-    currentlyReading: [],
-    read: [],
-    wantToRead: [],
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
-    showSearchPage: false
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentlyReading: [],
+      read: [],
+      wantToRead: [],
+      /**
+       * TODO: Instead of using this state variable to keep track of which page
+       * we're on, use the URL in the browser's address bar. This will ensure that
+       * users can use the browser's back and forward buttons to navigate between
+       * pages, as well as provide a good URL they can bookmark and share.
+       */
+      showSearchPage: false
+    };
+
+    this.handleShelfChanger = this.handleShelfChanger.bind(this);
+  }
 
   componentDidMount() {
     let currentlyReading = [];
@@ -44,17 +49,54 @@ class BooksApp extends React.Component {
     });
   }
 
-  handleShelfChanger(bookId) {
-    console.log("Book id ", this.bookInfo.id);
-    //Set state on specific ID
+  handleShelfChanger(bookId, currentShelf, newShelf) {
+    console.log("Book id ", bookId, currentShelf, newShelf);
+    console.log("This is our state ", this.state);
 
-    // if (this.bookInfo.shelf === "currentlyReading") {
-    //   // this.setState({
-    //   //   currentlyReading
-    //   // });
-    //   // console.log(this.bookInfo.shelf);
-    // }
-    // console.log("CIAAAO");
+    let shelfOfSelectedBook;
+
+    //to set the state use function
+
+    if (currentShelf === "currentlyReading") {
+      console.log("This books is in currently reading");
+      shelfOfSelectedBook = this.state.currentlyReading;
+      this.moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf);
+      this.setState({ currentlyReading: shelfBookWillBeMovedTo });
+    } else if (currentShelf === "read") {
+      shelfOfSelectedBook = this.state.read;
+      this.moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf);
+      this.setState({ read: shelfBookWillBeMovedTo });
+    } else if (currentShelf === "wantToRead") {
+      shelfOfSelectedBook = this.state.wantToRead;
+      this.moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf);
+      this.setState({ wantToRead: shelfBookWillBeMovedTo });
+    }
+
+    console.log("This is the array of the current book: ", shelfOfSelectedBook);
+  }
+
+  moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf) {
+    let shelfBookWillBeMovedTo;
+    let bookToChange = shelfOfSelectedBook.filter(
+      bookById => bookById.id === bookId
+    );
+
+    console.log("Book to change:", bookToChange);
+    console.log("This state from findBookByIdInItsShelf function", this.state);
+    let shelfWithoutSelectedBook = shelfOfSelectedBook.splice(bookToChange, 1);
+    console.log("Book has been deleted", shelfWithoutSelectedBook);
+
+    if (newShelf === "currentlyReading") {
+      console.log("Shelf the book will be moved to", shelfBookWillBeMovedTo);
+      shelfBookWillBeMovedTo = this.state.currentlyReading;
+    } else if (newShelf === "read") {
+      shelfBookWillBeMovedTo = this.state.read;
+    } else if (newShelf === "wantToRead") {
+      shelfBookWillBeMovedTo = this.state.wantToRead;
+    }
+
+    shelfBookWillBeMovedTo.push(bookToChange[0]);
+    console.log("Book added to a new shelf ", shelfBookWillBeMovedTo);
   }
 
   render() {
