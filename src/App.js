@@ -181,7 +181,6 @@ class BooksApp extends React.Component {
                     </div>
                     <OpenSearchButton />
                 </div>
-                )}
             </div>
         );
     }
