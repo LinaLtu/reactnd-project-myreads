@@ -1,11 +1,12 @@
 {
   "dependencies": {
+    "codeceptjs": "^1.2.1",
     "nightmare": "^3.0.1",
     "nightmare-upload": "^0.1.1",
     "prop-types": "^15.6.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
-    "codeceptjs": "^1.2.1"
+    "react-router-dom": "^4.3.1"
   },
   "devDependencies": {
     "react-scripts": "1.1.4"

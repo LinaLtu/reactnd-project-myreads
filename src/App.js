@@ -2,8 +2,10 @@ import React from 'react';
 // import * as BooksAPI from './BooksAPI'
 import './App.css';
 import Shelf from './Components/Shelf.js';
+import OpenSearchButton from './Components/OpenSearchButton.js';
 import Search from './Components/Search.js';
 import { getAll } from './BooksAPI.js';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 class BooksApp extends React.Component {
     constructor(props) {
@@ -135,6 +137,7 @@ class BooksApp extends React.Component {
     render() {
         return (
             <div className="app">
+                <Route path="/search" exact component={Search} />
                 {this.state.showSearchPage ? (
                     <Search />
                 ) : (
@@ -161,15 +164,7 @@ class BooksApp extends React.Component {
                         <div className="list-books-content">
                             <div />
                         </div>
-                        <div className="open-search">
-                            <a
-                                onClick={() =>
-                                    this.setState({ showSearchPage: true })
-                                }
-                            >
-                                Add a book
-                            </a>
-                        </div>
+                        <OpenSearchButton />
                     </div>
                 )}
             </div>
