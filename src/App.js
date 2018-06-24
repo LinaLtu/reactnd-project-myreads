@@ -93,7 +93,11 @@ class BooksApp extends React.Component {
             shelfOfSelectedBook
         );
     }
-
+    /**
+     * @param {number} bookId
+     * @param {string} shelfOfSelectedBook
+     * @param {string} newShelf
+     */
     moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf) {
         if (shelfOfSelectedBook === newShelf) {
             return;
@@ -134,38 +138,49 @@ class BooksApp extends React.Component {
         };
     }
 
+    handleSearchImputChange() {
+        console.log('Something is changing in the search');
+    }
+
     render() {
         return (
             <div className="app">
-                <Route path="/search" exact component={Search} />
-                {this.state.showSearchPage ? (
-                    <Search />
-                ) : (
-                    <div className="list-books">
-                        <div className="list-books-title">
-                            <h1>MyReads</h1>
-                        </div>
-                        <Shelf
-                            books={this.state.currentlyReading}
-                            title="Currently Reading"
-                            handleShelfChanger={this.handleShelfChanger}
+                <Route
+                    path="/search"
+                    exact
+                    render={() => (
+                        <Search
+                            handleSearchImputChange={
+                                this.handleSearchImputChange
+                            }
                         />
-                        <Shelf
-                            books={this.state.read}
-                            title="Read"
-                            handleShelfChanger={this.handleShelfChanger}
-                        />
-                        <Shelf
-                            books={this.state.wantToRead}
-                            title="Want to Read"
-                            handleShelfChanger={this.handleShelfChanger}
-                        />
-
-                        <div className="list-books-content">
-                            <div />
-                        </div>
-                        <OpenSearchButton />
+                    )}
+                />
+                <div className="list-books">
+                    <div className="list-books-title">
+                        <h1>MyReads</h1>
                     </div>
+                    <Shelf
+                        books={this.state.currentlyReading}
+                        title="Currently Reading"
+                        handleShelfChanger={this.handleShelfChanger}
+                    />
+                    <Shelf
+                        books={this.state.read}
+                        title="Read"
+                        handleShelfChanger={this.handleShelfChanger}
+                    />
+                    <Shelf
+                        books={this.state.wantToRead}
+                        title="Want to Read"
+                        handleShelfChanger={this.handleShelfChanger}
+                    />
+
+                    <div className="list-books-content">
+                        <div />
+                    </div>
+                    <OpenSearchButton />
+                </div>
                 )}
             </div>
         );

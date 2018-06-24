@@ -21,6 +21,7 @@ class Search extends React.Component {
                         <input
                             type="text"
                             placeholder="Search by title or author"
+                            onChange={this.props.handleSearchImputChange}
                         />
                     </div>
                 </div>
