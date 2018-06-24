@@ -49,7 +49,18 @@ class BooksApp extends React.Component {
         });
     }
 
+    /**
+     * @param {number} bookId
+     * @param {string} currentShelf
+     * @param {string} newShelf
+     */
     handleShelfChanger(bookId, currentShelf, newShelf) {
+        console.log('handleShelfChanger from - to:', currentShelf, newShelf);
+
+        if (currentShelf === newShelf) {
+            return;
+        }
+
         console.log('Book id ', bookId, currentShelf, newShelf);
         console.log('This is our state ', this.state);
 
@@ -57,62 +68,68 @@ class BooksApp extends React.Component {
 
         //to set the state use function
 
+        // TODO: USE SWITCH
         if (currentShelf === 'currentlyReading') {
-            console.log('This books is in currently reading');
             shelfOfSelectedBook = this.state.currentlyReading;
-            this.moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf);
-            // this.setState({ currentlyReading: shelfBookWillBeMovedTo });
         } else if (currentShelf === 'read') {
             shelfOfSelectedBook = this.state.read;
-            this.moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf);
-            // this.setState({ read: shelfBookWillBeMovedTo });
         } else if (currentShelf === 'wantToRead') {
             shelfOfSelectedBook = this.state.wantToRead;
-            this.moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf);
-            // this.setState({ wantToRead: shelfBookWillBeMovedTo });
         }
+
+        const updatedShelves = this.moveBookBetweenShelves(
+            bookId,
+            shelfOfSelectedBook,
+            newShelf
+        );
+
+        this.setState({ [currentShelf]: updatedShelves.oldShelf });
+        this.setState({ [newShelf]: updatedShelves.newShelf });
+
         console.log(
             'This is the array of the current book: ',
             shelfOfSelectedBook
         );
-        function updateState(shelfBookWillBeMovedTo) {
-            console.log('From update the state ', shelfBookWillBeMovedTo);
-        }
     }
 
-    moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf, updateState) {
+    moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf) {
+        if (shelfOfSelectedBook === newShelf) {
+            return;
+        }
+
         let shelfBookWillBeMovedTo;
-        let bookToChange = shelfOfSelectedBook.filter(
+        let bookToChange = shelfOfSelectedBook.find(
             bookById => bookById.id === bookId
         );
+        bookToChange.shelf = newShelf;
 
-        console.log('Book to change:', bookToChange);
-        console.log(
-            'This state from findBookByIdInItsShelf function',
-            this.state
+        console.log('Book I want to change:', bookToChange);
+
+        let shelfWithoutSelectedBook = shelfOfSelectedBook.filter(
+            bookById => bookById.id !== bookId
         );
-        let shelfWithoutSelectedBook = shelfOfSelectedBook.splice(
-            bookToChange,
-            1
-        );
+
         console.log('Book has been deleted', shelfWithoutSelectedBook);
 
         if (newShelf === 'currentlyReading') {
+            shelfBookWillBeMovedTo = this.state.currentlyReading;
             console.log(
                 'Shelf the book will be moved to',
                 shelfBookWillBeMovedTo
             );
-            shelfBookWillBeMovedTo = this.state.currentlyReading;
         } else if (newShelf === 'read') {
             shelfBookWillBeMovedTo = this.state.read;
         } else if (newShelf === 'wantToRead') {
             shelfBookWillBeMovedTo = this.state.wantToRead;
         }
 
-        shelfBookWillBeMovedTo.push(bookToChange[0]);
+        shelfBookWillBeMovedTo.push(bookToChange);
         console.log('Book added to a new shelf ', shelfBookWillBeMovedTo);
-        updateState(shelfBookWillBeMovedTo);
-        // return shelfBookWillBeMovedTo;
+
+        return {
+            oldShelf: shelfWithoutSelectedBook,
+            newShelf: shelfBookWillBeMovedTo
+        };
     }
 
     render() {
