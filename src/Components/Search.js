@@ -27,8 +27,11 @@ class Search extends React.Component {
           </div>
         </div>
         <div className="search-books-results">
-          <Shelf title="Search Results" books={this.props.results} />
-          <ol className="books-grid" />
+          {!this.props.emptyQuery ? (
+            <Shelf title="Search Results" books={this.props.results} />
+          ) : (
+            <p>Sorry, no results found</p>
+          )}
         </div>
       </div>
     );

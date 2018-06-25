@@ -14,7 +14,8 @@ class BooksApp extends React.Component {
       currentlyReading: [],
       read: [],
       wantToRead: [],
-      bookListFromSearch: []
+      bookListFromSearch: [],
+      emptyQuery: false
       // inputValue: ""
     };
 
@@ -127,24 +128,26 @@ class BooksApp extends React.Component {
   }
 
   handleSearchImputChange(e) {
-    // this.setState({
-    //   inputValue: e.target.value
-    // });
-
     console.log("This is out state ", this.state.inputValue);
     if (e.target.value.length >= 3) {
+      console.log("We are HEREEE");
       search(e.target.value)
         .then(results => {
-          console.log("Results just arrvied ", results);
-          // let changedResults = results.map(result => {
-          //   result.shelf = "";
-          // });
-          console.log("Shelf added to results ", results);
-          this.setState({ bookListFromSearch: results });
+          console.log("Results ", results);
+
+          if (results.error) {
+            this.setState({ emptyQuery: true, bookListFromSearch: [] });
+          } else {
+            //
+            this.setState({ bookListFromSearch: results });
+          }
+
           console.log(
             "This is out stare from handleSearchImputChange ",
             this.state.bookListFromSearch
           );
+
+          console.log("Empty query: ", this.state.emptyQuery);
         })
         .catch(new Error("Something went wrong"));
     }
@@ -161,6 +164,7 @@ class BooksApp extends React.Component {
               <Search
                 handleSearchImputChange={this.handleSearchImputChange}
                 results={this.state.bookListFromSearch}
+                searchStarted={this.state.emptyQuery}
               />
             </div>
           )}
