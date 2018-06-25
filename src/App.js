@@ -135,6 +135,11 @@ class BooksApp extends React.Component {
     if (e.target.value.length >= 3) {
       search(e.target.value)
         .then(results => {
+          console.log("Results just arrvied ", results);
+          // let changedResults = results.map(result => {
+          //   result.shelf = "";
+          // });
+          console.log("Shelf added to results ", results);
           this.setState({ bookListFromSearch: results });
           console.log(
             "This is out stare from handleSearchImputChange ",
@@ -152,7 +157,12 @@ class BooksApp extends React.Component {
           path="/search"
           exact
           render={() => (
-            <Search handleSearchImputChange={this.handleSearchImputChange} />
+            <div>
+              <Search
+                handleSearchImputChange={this.handleSearchImputChange}
+                results={this.state.bookListFromSearch}
+              />
+            </div>
           )}
         />
         <div className="list-books">

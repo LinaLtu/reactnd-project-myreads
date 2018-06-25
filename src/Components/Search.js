@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Shelf from "./Shelf.js";
 
 class Search extends React.Component {
   render() {
@@ -26,6 +27,7 @@ class Search extends React.Component {
           </div>
         </div>
         <div className="search-books-results">
+          <Shelf title="Search Results" books={this.props.results} />
           <ol className="books-grid" />
         </div>
       </div>
