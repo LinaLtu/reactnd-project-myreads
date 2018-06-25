@@ -151,9 +151,6 @@ class BooksApp extends React.Component {
             console.log('We are HEREEE');
             search(e.target.value)
                 .then(results => {
-                    results.map(result => {
-                        result.shelf = 'none';
-                    });
                     console.log('Results ', results);
 
                     if (results.error) {
@@ -162,6 +159,9 @@ class BooksApp extends React.Component {
                             bookListFromSearch: []
                         });
                     } else {
+                        results.forEach(result => {
+                            result.shelf = 'none';
+                        });
                         this.setState({ bookListFromSearch: results });
                     }
 
