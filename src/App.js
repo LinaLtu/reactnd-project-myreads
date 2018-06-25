@@ -127,6 +127,9 @@ class BooksApp extends React.Component {
     };
   }
 
+  /**
+   * @param {object} event
+   */
   handleSearchImputChange(e) {
     console.log("This is out state ", this.state.inputValue);
     if (e.target.value.length >= 3) {
@@ -138,7 +141,9 @@ class BooksApp extends React.Component {
           if (results.error) {
             this.setState({ emptyQuery: true, bookListFromSearch: [] });
           } else {
-            //
+            results.map(result => {
+              result.shelf = "";
+            });
             this.setState({ bookListFromSearch: results });
           }
 
@@ -169,6 +174,7 @@ class BooksApp extends React.Component {
             </div>
           )}
         />
+
         <div className="list-books">
           <div className="list-books-title">
             <h1>MyReads</h1>
