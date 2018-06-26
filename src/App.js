@@ -200,31 +200,37 @@ class BooksApp extends React.Component {
                     )}
                 />
 
-                <div className="list-books">
-                    <div className="list-books-title">
-                        <h1>MyReads</h1>
-                    </div>
-                    <Shelf
-                        books={this.state.currentlyReading}
-                        title="Currently Reading"
-                        handleShelfChanger={this.handleShelfChanger}
-                    />
-                    <Shelf
-                        books={this.state.read}
-                        title="Read"
-                        handleShelfChanger={this.handleShelfChanger}
-                    />
-                    <Shelf
-                        books={this.state.wantToRead}
-                        title="Want to Read"
-                        handleShelfChanger={this.handleShelfChanger}
-                    />
+                <Route
+                    path="/"
+                    exact
+                    render={() => (
+                        <div className="list-books">
+                            <div className="list-books-title">
+                                <h1>MyReads</h1>
+                            </div>
+                            <Shelf
+                                books={this.state.currentlyReading}
+                                title="Currently Reading"
+                                handleShelfChanger={this.handleShelfChanger}
+                            />
+                            <Shelf
+                                books={this.state.read}
+                                title="Read"
+                                handleShelfChanger={this.handleShelfChanger}
+                            />
+                            <Shelf
+                                books={this.state.wantToRead}
+                                title="Want to Read"
+                                handleShelfChanger={this.handleShelfChanger}
+                            />
 
-                    <div className="list-books-content">
-                        <div />
-                    </div>
-                    <OpenSearchButton />
-                </div>
+                            <div className="list-books-content">
+                                <div />
+                            </div>
+                            <OpenSearchButton />
+                        </div>
+                    )}
+                />
             </div>
         );
     }
