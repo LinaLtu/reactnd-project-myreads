@@ -3,7 +3,8 @@ import BookShelfChanger from "./BookShelfChanger.js";
 import Search from "./Search.js";
 
 class BookItem extends React.Component {
-  render() {
+  constructor(props) {
+    super(props);
     let url = "";
     if (this.props.bookInfo.imageLinks.thumbnail) {
       url = this.props.bookInfo.imageLinks.thumbnail;
@@ -12,6 +13,9 @@ class BookItem extends React.Component {
         "https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg?auto=compress&cs=tinysrgb&h=350";
     }
 
+    let listofAuthors = this.props.bookInfo.authors;
+  }
+  render(url, listofAuthors) {
     return (
       <div className="book">
         <div className="book-top">
@@ -36,11 +40,12 @@ class BookItem extends React.Component {
           />
         </div>
         <div className="book-title">{this.props.bookInfo.title}</div>
-        {this.props.bookInfo.authors.map(author => (
-          <div className="book-authors" key={author}>
-            {author}
-          </div>
-        ))}
+        {this.props.bookInfo.authors.length !== 0 &&
+          listofAuthors.map(author => {
+            <div className="book-authors" key={author}>
+              {author}
+            </div>;
+          })}
       </div>
     );
   }
