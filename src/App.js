@@ -119,15 +119,19 @@ class BooksApp extends React.Component {
 
     console.log("Book has been deleted", shelfWithoutSelectedBook);
 
-    if (newShelf === "currentlyReading") {
-      shelfBookWillBeMovedTo = this.state.currentlyReading;
-      console.log("Shelf the book will be moved to", shelfBookWillBeMovedTo);
-    } else if (newShelf === "read") {
-      shelfBookWillBeMovedTo = this.state.read;
-    } else if (newShelf === "wantToRead") {
-      shelfBookWillBeMovedTo = this.state.wantToRead;
-    } else if (newShelf === null) {
-      shelfBookWillBeMovedTo = this.state.bookListFromSearch;
+    switch (newShelf) {
+      case "currentlyReading":
+        shelfBookWillBeMovedTo = this.state.currentlyReading;
+        break;
+      case "read":
+        shelfBookWillBeMovedTo = this.state.read;
+        break;
+      case "wantToRead":
+        shelfBookWillBeMovedTo = this.state.wantToRead;
+        break;
+      case null:
+        shelfBookWillBeMovedTo = this.state.bookListFromSearch;
+        break;
     }
 
     shelfBookWillBeMovedTo.push(bookToChange);
