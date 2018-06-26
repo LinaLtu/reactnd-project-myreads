@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Shelf from "./Shelf.js";
+import BookShelfChanger from "./BookShelfChanger.js";
 
 class Search extends React.Component {
   render() {
@@ -28,7 +29,11 @@ class Search extends React.Component {
         </div>
         <div className="search-books-results">
           {!this.props.emptyQuery ? (
-            <Shelf title="Search Results" books={this.props.results} />
+            <Shelf
+              title="Search Results"
+              books={this.props.results}
+              handleShelfChanger={this.props.handleShelfChanger}
+            />
           ) : (
             <p>Sorry, no results found</p>
           )}

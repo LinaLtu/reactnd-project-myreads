@@ -1,5 +1,6 @@
 import React from "react";
 import BookShelfChanger from "./BookShelfChanger.js";
+import Search from "./Search.js";
 
 class BookItem extends React.Component {
   render() {
@@ -24,7 +25,7 @@ class BookItem extends React.Component {
           />
           <BookShelfChanger
             bookId={this.props.bookInfo.id}
-            shelf={this.props.bookInfo.shelf}
+            shelf={this.props.bookInfo.shelf || ""}
             onSelectChange={event =>
               this.props.onShelfChange(
                 this.props.bookInfo.id,
