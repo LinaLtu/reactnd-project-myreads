@@ -5,11 +5,12 @@ import Shelf from './Components/Shelf.js';
 import OpenSearchButton from './Components/OpenSearchButton.js';
 import Search from './Components/Search.js';
 import { getAll, search } from './BooksAPI.js';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
 class BooksApp extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
             currentlyReading: [],
             read: [],
@@ -29,27 +30,43 @@ class BooksApp extends React.Component {
         let wantToRead = [];
         let bookListFromSearch = [];
         console.log('Read array ', read);
-        getAll().then(books => {
-            books.forEach(book => {
-                if (book.shelf === 'read') {
-                    console.log('Before pushing to a read array ', read);
-                    read.push(book);
-                } else if (book.shelf === 'currentlyReading') {
-                    currentlyReading.push(book);
-                } else if (book.shelf === 'wantToRead') {
-                    wantToRead.push(book);
-                } else if (book.shelf === null) {
-                    bookListFromSearch.push(book);
-                }
-            });
+
+        let parsedAllBooks = null;
+
+        if (window.localStorage.getItem('allBooks')) {
+            parsedAllBooks = JSON.parse(
+                window.localStorage.getItem('allBooks')
+            );
+        }
+
+        if (parsedAllBooks) {
             this.setState({
-                currentlyReading,
-                read,
-                wantToRead,
-                bookListFromSearch
+                currentlyReading: parsedAllBooks.currentlyReading,
+                read: parsedAllBooks.read,
+                wantToRead: parsedAllBooks.wantToRead
             });
-            console.log('state ', this.state);
-        });
+        } else {
+            getAll().then(books => {
+                books.forEach(book => {
+                    if (book.shelf === 'read') {
+                        console.log('Before pushing to a read array ', read);
+                        read.push(book);
+                    } else if (book.shelf === 'currentlyReading') {
+                        currentlyReading.push(book);
+                    } else if (book.shelf === 'wantToRead') {
+                        wantToRead.push(book);
+                    } else if (book.shelf === null) {
+                        bookListFromSearch.push(book);
+                    }
+                });
+                this.setState({
+                    currentlyReading,
+                    read,
+                    wantToRead,
+                    bookListFromSearch
+                });
+            });
+        }
     }
 
     /**
@@ -82,6 +99,8 @@ class BooksApp extends React.Component {
             case null:
                 shelfOfSelectedBook = this.state.bookListFromSearch;
                 break;
+            default:
+                return;
         }
 
         const updatedShelves = this.moveBookBetweenShelves(
@@ -90,14 +109,31 @@ class BooksApp extends React.Component {
             newShelf
         );
 
-        this.setState({ [currentShelf]: updatedShelves.oldShelf });
-        this.setState({ [newShelf]: updatedShelves.newShelf });
+        this.setState({
+            [currentShelf]: updatedShelves.oldShelf,
+            [newShelf]: updatedShelves.newShelf
+        });
 
         console.log(
             'This is the array of the current book: ',
             shelfOfSelectedBook
         );
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        // setState doesn't update the state immediately
+        // so we need to use componentDidUpdate to get the updated state and save it in the localStorage
+
+        let allShelves = {
+            currentlyReading: this.state.currentlyReading,
+            read: this.state.read,
+            wantToRead: this.state.wantToRead,
+            noShelf: this.state.bookListFromSearch
+        };
+
+        window.localStorage.setItem('allBooks', JSON.stringify(allShelves));
+    }
+
     /**
      * @param {number} bookId
      * @param {string} shelfOfSelectedBook
@@ -135,6 +171,8 @@ class BooksApp extends React.Component {
             case null:
                 shelfBookWillBeMovedTo = this.state.bookListFromSearch;
                 break;
+            default:
+                return;
         }
 
         shelfBookWillBeMovedTo.push(bookToChange);
@@ -214,13 +252,13 @@ class BooksApp extends React.Component {
                                 handleShelfChanger={this.handleShelfChanger}
                             />
                             <Shelf
-                                books={this.state.read}
-                                title="Read"
+                                books={this.state.wantToRead}
+                                title="Want to Read"
                                 handleShelfChanger={this.handleShelfChanger}
                             />
                             <Shelf
-                                books={this.state.wantToRead}
-                                title="Want to Read"
+                                books={this.state.read}
+                                title="Read"
                                 handleShelfChanger={this.handleShelfChanger}
                             />
 

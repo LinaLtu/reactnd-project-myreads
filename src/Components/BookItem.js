@@ -1,6 +1,5 @@
 import React from 'react';
 import BookShelfChanger from './BookShelfChanger.js';
-import Search from './Search.js';
 
 class BookItem extends React.Component {
     // constructor(props) {
