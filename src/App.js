@@ -42,7 +42,8 @@ class BooksApp extends React.Component {
       this.setState({
         currentlyReading: parsedAllBooks.currentlyReading,
         read: parsedAllBooks.read,
-        wantToRead: parsedAllBooks.wantToRead
+        wantToRead: parsedAllBooks.wantToRead,
+        bookListFromSearch: null
       });
     } else {
       getAll().then(books => {
@@ -54,7 +55,7 @@ class BooksApp extends React.Component {
             currentlyReading.push(book);
           } else if (book.shelf === "wantToRead") {
             wantToRead.push(book);
-          } else if (book.shelf === null) {
+          } else if (book.shelf === "") {
             bookListFromSearch.push(book);
           }
         });
