@@ -4,10 +4,11 @@ This is the starter template for the final assessment project for Udacity's Reac
 
 Of course, you are free to start this project from scratch if you wish! Just be sure to use [Create React App](https://github.com/facebookincubator/create-react-app) to bootstrap the project.
 
-## TL DR
+## TL;DR
 
 To get started developing right away:
 
 * install all project dependencies with `npm install`
 * start the development server with `npm start`
 * install ReactDOM with `npm install react react-dom`
+* to get notifications when books are added to shelves, install Noty `npm install noty`
