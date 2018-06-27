@@ -116,11 +116,13 @@ class BooksApp extends React.Component {
     new Noty({
       text: "Book has been added to a shelf",
       layout: "center",
-      theme: "semanticui",
-      timeout: 1000,
+      progressBar: false,
+      type: "success",
+      theme: "bootstrap-v4",
+      timeout: 500,
       animation: {
-        open: "animated bounceInRight", // Animate.css class names
-        close: "animated bounceOutRight" // Animate.css class names
+        open: "animated fadeIn", // Animate.css class names
+        close: "animated fadeOut" // Animate.css class names
       }
     }).show();
 
