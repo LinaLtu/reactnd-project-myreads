@@ -121,8 +121,8 @@ class BooksApp extends React.Component {
       theme: "bootstrap-v4",
       timeout: 500,
       animation: {
-        open: "animated fadeIn", // Animate.css class names
-        close: "animated fadeOut" // Animate.css class names
+        open: "animated pulse",
+        close: "animated fadeOut"
       }
     }).show();
 

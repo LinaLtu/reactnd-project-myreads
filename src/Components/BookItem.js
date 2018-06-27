@@ -39,9 +39,10 @@ class BookItem extends React.Component {
               backgroundImage: `url(${url})`
             }}
           />
+
           <BookShelfChanger
             bookId={this.props.bookInfo.id}
-            shelf={this.props.bookInfo.shelf || ""}
+            shelf={this.props.bookInfo.shelf || null}
             onSelectChange={event =>
               this.props.onShelfChange(
                 this.props.bookInfo.id,

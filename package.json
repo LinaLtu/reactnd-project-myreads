@@ -1,8 +1,5 @@
 {
   "dependencies": {
-    "codeceptjs": "^1.2.1",
-    "nightmare": "^3.0.1",
-    "nightmare-upload": "^0.1.1",
     "noty": "^3.2.0-beta",
     "prop-types": "^15.6.1",
     "react": "^16.3.2",
