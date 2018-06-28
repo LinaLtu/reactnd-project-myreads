@@ -124,8 +124,14 @@ class BooksApp extends React.Component {
       [newShelf]: updatedShelves.newShelf
     });
 
+    let NotyText = "";
+    if (newShelf === "none") {
+      NotyText = "Book has been deleted";
+    } else {
+      NotyText = "Book has been added to a shelf";
+    }
     new Noty({
-      text: "Book has been added to a shelf",
+      text: `${NotyText}`,
       layout: "center",
       progressBar: false,
       type: "success",
