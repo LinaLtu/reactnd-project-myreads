@@ -1,12 +1,11 @@
 import React from "react";
-// import * as BooksAPI from './BooksAPI'
-import "./App.css";
-import Shelf from "./Components/Shelf.js";
-import OpenSearchButton from "./Components/OpenSearchButton.js";
-import Search from "./Components/Search.js";
 import { getAll, search } from "./BooksAPI.js";
 import { Route } from "react-router-dom";
 import Noty from "noty";
+import "./App.css";
+import Search from "./Components/Search.js";
+import Shelf from "./Components/Shelf.js";
+import OpenSearchButton from "./Components/OpenSearchButton.js";
 
 class BooksApp extends React.Component {
   constructor(props) {
@@ -17,8 +16,8 @@ class BooksApp extends React.Component {
       read: [],
       wantToRead: [],
       bookListFromSearch: [],
+      deletedBooks: [],
       emptyQuery: false
-      // inputValue: ""
     };
 
     this.handleShelfChanger = this.handleShelfChanger.bind(this);
@@ -29,7 +28,9 @@ class BooksApp extends React.Component {
     let currentlyReading = [];
     let read = [];
     let wantToRead = [];
+    let deletedBooks = [];
     let bookListFromSearch = [];
+
     console.log("Read array ", read);
 
     let parsedAllBooks = null;
@@ -43,6 +44,7 @@ class BooksApp extends React.Component {
         currentlyReading: parsedAllBooks.currentlyReading,
         read: parsedAllBooks.read,
         wantToRead: parsedAllBooks.wantToRead,
+        deletedBooks: parsedAllBooks.deletedBooks,
         bookListFromSearch: []
       });
     } else {
@@ -55,14 +57,17 @@ class BooksApp extends React.Component {
             currentlyReading.push(book);
           } else if (book.shelf === "wantToRead") {
             wantToRead.push(book);
-          } else if (book.shelf === "") {
+          } else if (book.shelf === "search") {
             bookListFromSearch.push(book);
+          } else if (book.shelf === "none") {
+            deletedBooks.push(book);
           }
         });
         this.setState({
           currentlyReading,
           read,
           wantToRead,
+          deletedBooks,
           bookListFromSearch
         });
       });
@@ -96,9 +101,14 @@ class BooksApp extends React.Component {
       case "wantToRead":
         shelfOfSelectedBook = this.state.wantToRead;
         break;
-      case "none":
+      case "search":
         shelfOfSelectedBook = this.state.bookListFromSearch;
         break;
+
+      //in theory no book has a "none" shelf because we don't take it from a none shelf
+      // case "none":
+      //   shelfOfSelectedBook = this.state.deletedBooks;
+      //   break;
       default:
         return;
     }
@@ -138,7 +148,7 @@ class BooksApp extends React.Component {
       currentlyReading: this.state.currentlyReading,
       read: this.state.read,
       wantToRead: this.state.wantToRead,
-      noShelf: this.state.bookListFromSearch
+      deletedBooks: this.state.deletedBooks
     };
 
     window.localStorage.setItem("allBooks", JSON.stringify(allShelves));
@@ -154,11 +164,13 @@ class BooksApp extends React.Component {
       return;
     }
 
-    let shelfBookWillBeMovedTo;
+    let shelfBookWillBeMovedTo = [];
     let bookToChange = shelfOfSelectedBook.find(
       bookById => bookById.id === bookId
     );
+
     bookToChange.shelf = newShelf;
+    //here all good. at this point, shelf gets set to "none"
 
     console.log("Book I want to change:", bookToChange);
 
@@ -167,7 +179,9 @@ class BooksApp extends React.Component {
     );
 
     console.log("Book has been deleted", shelfWithoutSelectedBook);
+    console.log("About to move to 'none' shelf", this.state);
 
+    //at this point. if "none is selected", newShelf is "none"
     switch (newShelf) {
       case "currentlyReading":
         shelfBookWillBeMovedTo = this.state.currentlyReading;
@@ -178,8 +192,11 @@ class BooksApp extends React.Component {
       case "wantToRead":
         shelfBookWillBeMovedTo = this.state.wantToRead;
         break;
-      case "none":
+      case "search":
         shelfBookWillBeMovedTo = this.state.bookListFromSearch;
+        break;
+      case "none":
+        shelfBookWillBeMovedTo = this.state.deletedBooks;
         break;
       default:
         return;
@@ -198,22 +215,30 @@ class BooksApp extends React.Component {
    * @param {object} event
    */
   handleSearchImputChange(e) {
+    e.preventDefault();
+    e.persist();
+    e.stopPropagation();
+    if (e.target.value == "") {
+      console.log("Search input  field is empty");
+      this.setState({ emptyQuery: true, bookListFromSearch: [] });
+    }
     if (e.target.value.length >= 3) {
-      console.log("We are HEREEE");
       search(e.target.value)
         .then(results => {
           console.log("Results ", results);
+          console.log("Event with results: ", e);
 
           if (results.error) {
+            console.log("Event without results: ", e.target);
             this.setState({
               emptyQuery: true,
               bookListFromSearch: []
             });
           } else {
             results.forEach(result => {
-              result.shelf = "none";
+              result.shelf = "search";
             });
-            this.setState({ bookListFromSearch: results });
+            this.setState({ emptyQuery: false, bookListFromSearch: results });
           }
 
           console.log(

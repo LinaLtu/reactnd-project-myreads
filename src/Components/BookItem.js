@@ -2,21 +2,6 @@ import React from "react";
 import BookShelfChanger from "./BookShelfChanger.js";
 
 class BookItem extends React.Component {
-  // constructor(props) {
-  //     super(props);
-  //     let url = '';
-  //     if (
-  //         this.props.bookInfo.imageLinks &&
-  //         this.props.bookInfo.imageLinks.thumbnail
-  //     ) {
-  //         url = this.props.bookInfo.imageLinks.thumbnail;
-  //     } else {
-  //         url =
-  //             'https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg?auto=compress&cs=tinysrgb&h=350';
-  //     }
-  //
-  //     let listofAuthors = this.props.bookInfo.authors;
-  // }
   render() {
     let url = "";
     if (
