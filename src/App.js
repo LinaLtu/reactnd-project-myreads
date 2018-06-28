@@ -43,7 +43,7 @@ class BooksApp extends React.Component {
         currentlyReading: parsedAllBooks.currentlyReading,
         read: parsedAllBooks.read,
         wantToRead: parsedAllBooks.wantToRead,
-        bookListFromSearch: null
+        bookListFromSearch: []
       });
     } else {
       getAll().then(books => {
@@ -96,7 +96,7 @@ class BooksApp extends React.Component {
       case "wantToRead":
         shelfOfSelectedBook = this.state.wantToRead;
         break;
-      case null:
+      case "none":
         shelfOfSelectedBook = this.state.bookListFromSearch;
         break;
       default:
@@ -178,7 +178,7 @@ class BooksApp extends React.Component {
       case "wantToRead":
         shelfBookWillBeMovedTo = this.state.wantToRead;
         break;
-      case null:
+      case "none":
         shelfBookWillBeMovedTo = this.state.bookListFromSearch;
         break;
       default:
@@ -198,7 +198,6 @@ class BooksApp extends React.Component {
    * @param {object} event
    */
   handleSearchImputChange(e) {
-    console.log("This is out state ", this.state.inputValue);
     if (e.target.value.length >= 3) {
       console.log("We are HEREEE");
       search(e.target.value)
@@ -212,7 +211,7 @@ class BooksApp extends React.Component {
             });
           } else {
             results.forEach(result => {
-              result.shelf = null;
+              result.shelf = "none";
             });
             this.setState({ bookListFromSearch: results });
           }
