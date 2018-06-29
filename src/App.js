@@ -20,6 +20,8 @@ class BooksApp extends React.Component {
     };
 
     this.handleShelfChanger = this.handleShelfChanger.bind(this);
+    this.resetSearchState = this.resetSearchState.bind(this);
+    this.handleOpenSearchButton = this.handleOpenSearchButton.bind(this);
     this.handleSearchImputChange = this.handleSearchImputChange.bind(this);
   }
 
@@ -34,44 +36,44 @@ class BooksApp extends React.Component {
 
     let parsedAllBooks = null;
 
-    // if (window.localStorage.getItem("allBooks")) {
-    //   parsedAllBooks = JSON.parse(window.localStorage.getItem("allBooks"));
-    // }
-    //
-    // if (parsedAllBooks) {
-    //   this.setState({
-    //     currentlyReading: parsedAllBooks.currentlyReading,
-    //     read: parsedAllBooks.read,
-    //     wantToRead: parsedAllBooks.wantToRead,
-    //     deletedBooks: parsedAllBooks.deletedBooks,
-    //     bookListFromSearch: []
-    //   });
-    // } else {
-    getAll().then(books => {
-      books.forEach(book => {
-        if (book.shelf === "read") {
-          console.log("Before pushing to a read array ", read);
-          read.push(book);
-        } else if (book.shelf === "currentlyReading") {
-          currentlyReading.push(book);
-        } else if (book.shelf === "wantToRead") {
-          wantToRead.push(book);
-        } else if (book.shelf === "search") {
-          search.push(book);
-        } else if (book.shelf === "none") {
-          deletedBooks.push(book);
-        }
-      });
+    if (window.localStorage.getItem("allBooks")) {
+      parsedAllBooks = JSON.parse(window.localStorage.getItem("allBooks"));
+    }
+
+    if (parsedAllBooks) {
       this.setState({
-        currentlyReading,
-        read,
-        wantToRead,
-        deletedBooks,
-        search
+        currentlyReading: parsedAllBooks.currentlyReading,
+        read: parsedAllBooks.read,
+        wantToRead: parsedAllBooks.wantToRead,
+        deletedBooks: parsedAllBooks.deletedBooks,
+        bookListFromSearch: []
       });
-    });
+    } else {
+      getAll().then(books => {
+        books.forEach(book => {
+          if (book.shelf === "read") {
+            console.log("Before pushing to a read array ", read);
+            read.push(book);
+          } else if (book.shelf === "currentlyReading") {
+            currentlyReading.push(book);
+          } else if (book.shelf === "wantToRead") {
+            wantToRead.push(book);
+          } else if (book.shelf === "search") {
+            search.push(book);
+          } else if (book.shelf === "none") {
+            deletedBooks.push(book);
+          }
+        });
+        this.setState({
+          currentlyReading,
+          read,
+          wantToRead,
+          deletedBooks,
+          search
+        });
+      });
+    }
   }
-  // }
 
   /**
    * @param {number} bookId
@@ -152,6 +154,7 @@ class BooksApp extends React.Component {
       deletedBooks: this.state.deletedBooks
     };
 
+    console.log("SETTING ITEM");
     window.localStorage.setItem("allBooks", JSON.stringify(allShelves));
   }
 
@@ -280,6 +283,7 @@ class BooksApp extends React.Component {
   }
 
   handleOpenSearchButton() {
+    console.log("in handleOpenSearchButton");
     this.resetSearchState();
   }
 
