@@ -29,7 +29,7 @@ class BooksApp extends React.Component {
     let currentlyReading = [];
     let read = [];
     let wantToRead = [];
-    let deletedBooks = [];
+    let none = [];
     let search = [];
 
     console.log("Read array ", read);
@@ -45,8 +45,8 @@ class BooksApp extends React.Component {
         currentlyReading: parsedAllBooks.currentlyReading,
         read: parsedAllBooks.read,
         wantToRead: parsedAllBooks.wantToRead,
-        deletedBooks: parsedAllBooks.deletedBooks,
-        bookListFromSearch: []
+        none: parsedAllBooks.none,
+        search: []
       });
     } else {
       getAll().then(books => {
@@ -61,14 +61,14 @@ class BooksApp extends React.Component {
           } else if (book.shelf === "search") {
             search.push(book);
           } else if (book.shelf === "none") {
-            deletedBooks.push(book);
+            none.push(book);
           }
         });
         this.setState({
           currentlyReading,
           read,
           wantToRead,
-          deletedBooks,
+          none,
           search
         });
       });
@@ -94,7 +94,34 @@ class BooksApp extends React.Component {
     console.log("Book id ", bookId, currentShelfName, newShelfName);
     console.log("This is our state ", this.state);
 
-    const updatedShelves = this.moveBookBetweenShelves(
+    // If moving a book from the search, check whether the book is already in one of our allShelves
+
+    if (currentShelfName === "search") {
+      let searchedBook = this.state.currentlyReading
+        .concat(this.state.read)
+        .concat(this.state.wantToRead)
+        .find(book => book.id === bookId);
+
+      if (searchedBook) {
+        this.showSuccessMessage("This book is already in your library", false);
+        return false;
+      }
+
+      // TODO Check whether the book had been previously deleted
+      // this.state.none;
+
+      let index = this.state.none.findIndex(book => book.id === bookId);
+
+      if (index > -1) {
+        this.state.none.splice(index, 1);
+
+        this.setState({
+          none: this.state.none
+        });
+      }
+    }
+
+    const result = this.moveBookBetweenShelves(
       bookId,
       currentShelfName,
       newShelfName
@@ -105,6 +132,9 @@ class BooksApp extends React.Component {
     //   [newShelfName]: updatedShelves.newShelf
     // });
 
+    // If updatedShelves is undefined or false, the book has not been moved
+    if (!result) return;
+
     let NotyText = "";
     if (newShelfName === "none") {
       NotyText = "Book has been deleted";
@@ -113,8 +143,6 @@ class BooksApp extends React.Component {
     }
 
     this.showSuccessMessage(NotyText, true);
-
-    // console.log("This is the array of the current book: ", shelfOfSelectedBook);
   }
 
   /**
@@ -151,11 +179,11 @@ class BooksApp extends React.Component {
       currentlyReading: this.state.currentlyReading,
       read: this.state.read,
       wantToRead: this.state.wantToRead,
-      deletedBooks: this.state.deletedBooks
+      none: this.state.none
     };
 
-    console.log("SETTING ITEM");
-    window.localStorage.setItem("allBooks", JSON.stringify(allShelves));
+    console.log("SETTING localStorage");
+    // window.localStorage.setItem("allBooks", JSON.stringify(allShelves));
   }
 
   /**
@@ -179,7 +207,7 @@ class BooksApp extends React.Component {
       return;
     }
 
-    //we get a shelf the book should be moved to
+    // We get a shelf the book should be moved to
 
     console.log("shelfBookWillBeMovedTo ", shelfBookWillBeMovedTo);
 
@@ -194,44 +222,33 @@ class BooksApp extends React.Component {
 
     console.log("SHELF it will be moved into ", shelfBookWillBeMovedTo);
 
-    //we check if the book is already on the shelf
-
-    let filteredResult = "";
-
-    filteredResult = shelfBookWillBeMovedTo.filter(
+    let bookToChange = shelfOfSelectedBook.find(
       bookById => bookById.id === bookId
     );
 
-    if (filteredResult.length !== 0) {
-      this.showSuccessMessage("No", false);
-      return false;
-    } else {
-      let bookToChange = shelfOfSelectedBook.find(
-        bookById => bookById.id === bookId
-      );
+    bookToChange.shelf = newShelfName;
+    //here all good. at this point, shelf gets set to "none"
 
-      bookToChange.shelf = newShelfName;
-      //here all good. at this point, shelf gets set to "none"
+    console.log("Book I want to change:", bookToChange);
 
-      console.log("Book I want to change:", bookToChange);
+    let shelfWithoutSelectedBook = shelfOfSelectedBook.filter(
+      bookById => bookById.id !== bookId
+    );
 
-      let shelfWithoutSelectedBook = shelfOfSelectedBook.filter(
-        bookById => bookById.id !== bookId
-      );
+    shelfBookWillBeMovedTo.push(bookToChange);
+    console.log("Book has been deleted", shelfWithoutSelectedBook);
+    // console.log("About to move to 'none' shelf", this.state);
+    // return {
+    //   oldShelf: shelfWithoutSelectedBook,
+    //   newShelf: shelfBookWillBeMovedTo
+    // };
 
-      shelfBookWillBeMovedTo.push(bookToChange);
-      console.log("Book has been deleted", shelfWithoutSelectedBook);
-      // console.log("About to move to 'none' shelf", this.state);
-      // return {
-      //   oldShelf: shelfWithoutSelectedBook,
-      //   newShelf: shelfBookWillBeMovedTo
-      // };
+    this.setState({
+      [currentShelfName]: shelfWithoutSelectedBook,
+      [newShelfName]: shelfBookWillBeMovedTo
+    });
 
-      this.setState({
-        [currentShelfName]: shelfWithoutSelectedBook,
-        [newShelfName]: shelfBookWillBeMovedTo
-      });
-    }
+    return true;
   }
   /**
    * @param {object} event
