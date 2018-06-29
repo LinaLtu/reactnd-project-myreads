@@ -12,6 +12,13 @@ class BookShelfChanger extends React.Component {
           <option value="move" disabled>
             Move to...
           </option>
+
+          {this.props.shelf === "search" && (
+            <option value="search" disabled>
+              Search
+            </option>
+          )}
+
           <option value="currentlyReading">Currently Reading</option>
           <option value="wantToRead">Want to Read</option>
           <option value="read">Read</option>
