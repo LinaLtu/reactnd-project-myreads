@@ -20,9 +20,9 @@ class BooksApp extends React.Component {
     };
 
     this.handleShelfChanger = this.handleShelfChanger.bind(this);
+    this.handleSearchImputChange = this.handleSearchImputChange.bind(this);
     this.resetSearchState = this.resetSearchState.bind(this);
     this.handleOpenSearchButton = this.handleOpenSearchButton.bind(this);
-    this.handleSearchImputChange = this.handleSearchImputChange.bind(this);
   }
 
   componentDidMount() {
@@ -31,8 +31,6 @@ class BooksApp extends React.Component {
     let wantToRead = [];
     let none = [];
     let search = [];
-
-    console.log("Read array ", read);
 
     let parsedAllBooks = null;
 
@@ -52,7 +50,6 @@ class BooksApp extends React.Component {
       getAll().then(books => {
         books.forEach(book => {
           if (book.shelf === "read") {
-            console.log("Before pushing to a read array ", read);
             read.push(book);
           } else if (book.shelf === "currentlyReading") {
             currentlyReading.push(book);
@@ -81,18 +78,9 @@ class BooksApp extends React.Component {
    * @param {string} newShelfName
    */
   handleShelfChanger(bookId, currentShelfName, newShelfName) {
-    console.log(
-      "handleShelfChanger from - to:",
-      currentShelfName,
-      newShelfName
-    );
-
     if (currentShelfName === newShelfName) {
       return;
     }
-
-    console.log("Book id ", bookId, currentShelfName, newShelfName);
-    console.log("This is our state ", this.state);
 
     // If moving a book from the search, check whether the book is already in one of our allShelves
 
@@ -106,9 +94,6 @@ class BooksApp extends React.Component {
         this.showSuccessMessage("This book is already in your library", false);
         return false;
       }
-
-      // TODO Check whether the book had been previously deleted
-      // this.state.none;
 
       let index = this.state.none.findIndex(book => book.id === bookId);
 
@@ -126,11 +111,6 @@ class BooksApp extends React.Component {
       currentShelfName,
       newShelfName
     );
-
-    // this.setState({
-    //   [currentShelfName]: updatedShelves.oldShelf,
-    //   [newShelfName]: updatedShelves.newShelf
-    // });
 
     // If updatedShelves is undefined or false, the book has not been moved
     if (!result) return;
@@ -182,8 +162,7 @@ class BooksApp extends React.Component {
       none: this.state.none
     };
 
-    console.log("SETTING localStorage");
-    // window.localStorage.setItem("allBooks", JSON.stringify(allShelves));
+    window.localStorage.setItem("allBooks", JSON.stringify(allShelves));
   }
 
   /**
@@ -209,8 +188,6 @@ class BooksApp extends React.Component {
 
     // We get a shelf the book should be moved to
 
-    console.log("shelfBookWillBeMovedTo ", shelfBookWillBeMovedTo);
-
     let shelfBookWillBeMovedTo = "";
 
     if (this.state[newShelfName]) {
@@ -220,8 +197,6 @@ class BooksApp extends React.Component {
       return;
     }
 
-    console.log("SHELF it will be moved into ", shelfBookWillBeMovedTo);
-
     let bookToChange = shelfOfSelectedBook.find(
       bookById => bookById.id === bookId
     );
@@ -229,19 +204,11 @@ class BooksApp extends React.Component {
     bookToChange.shelf = newShelfName;
     //here all good. at this point, shelf gets set to "none"
 
-    console.log("Book I want to change:", bookToChange);
-
     let shelfWithoutSelectedBook = shelfOfSelectedBook.filter(
       bookById => bookById.id !== bookId
     );
 
     shelfBookWillBeMovedTo.push(bookToChange);
-    console.log("Book has been deleted", shelfWithoutSelectedBook);
-    // console.log("About to move to 'none' shelf", this.state);
-    // return {
-    //   oldShelf: shelfWithoutSelectedBook,
-    //   newShelf: shelfBookWillBeMovedTo
-    // };
 
     this.setState({
       [currentShelfName]: shelfWithoutSelectedBook,
@@ -257,10 +224,9 @@ class BooksApp extends React.Component {
     e.preventDefault();
     e.persist();
     e.stopPropagation();
-    // reset the search page if search input field is empty
 
+    // reset the search page if search input field is empty
     if (e.target.value === "") {
-      console.log("Search input  field is empty");
       this.resetSearchState();
       return;
     }
@@ -269,12 +235,8 @@ class BooksApp extends React.Component {
     if (e.target.value.length >= 3) {
       search(e.target.value)
         .then(results => {
-          console.log("Results ", results);
-          console.log("Event with results: ", e);
-
           // handle incorrect search query
           if (results.error) {
-            console.log("Event without results: ", e.target);
             this.resetSearchState();
           } else {
             //else set the stare of search
@@ -283,11 +245,6 @@ class BooksApp extends React.Component {
             });
             this.setState({ search: results });
           }
-
-          console.log(
-            "This is out stare from handleSearchImputChange ",
-            this.state.search
-          );
         })
         .catch(new Error("Something went wrong"));
     }
@@ -300,7 +257,6 @@ class BooksApp extends React.Component {
   }
 
   handleOpenSearchButton() {
-    console.log("in handleOpenSearchButton");
     this.resetSearchState();
   }
 
