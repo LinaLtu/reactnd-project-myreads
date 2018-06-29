@@ -15,9 +15,8 @@ class BooksApp extends React.Component {
       currentlyReading: [],
       read: [],
       wantToRead: [],
-      bookListFromSearch: [],
-      deletedBooks: [],
-      emptyQuery: false
+      search: [],
+      none: []
     };
 
     this.handleShelfChanger = this.handleShelfChanger.bind(this);
@@ -29,112 +28,110 @@ class BooksApp extends React.Component {
     let read = [];
     let wantToRead = [];
     let deletedBooks = [];
-    let bookListFromSearch = [];
+    let search = [];
 
     console.log("Read array ", read);
 
     let parsedAllBooks = null;
 
-    if (window.localStorage.getItem("allBooks")) {
-      parsedAllBooks = JSON.parse(window.localStorage.getItem("allBooks"));
-    }
-
-    if (parsedAllBooks) {
+    // if (window.localStorage.getItem("allBooks")) {
+    //   parsedAllBooks = JSON.parse(window.localStorage.getItem("allBooks"));
+    // }
+    //
+    // if (parsedAllBooks) {
+    //   this.setState({
+    //     currentlyReading: parsedAllBooks.currentlyReading,
+    //     read: parsedAllBooks.read,
+    //     wantToRead: parsedAllBooks.wantToRead,
+    //     deletedBooks: parsedAllBooks.deletedBooks,
+    //     bookListFromSearch: []
+    //   });
+    // } else {
+    getAll().then(books => {
+      books.forEach(book => {
+        if (book.shelf === "read") {
+          console.log("Before pushing to a read array ", read);
+          read.push(book);
+        } else if (book.shelf === "currentlyReading") {
+          currentlyReading.push(book);
+        } else if (book.shelf === "wantToRead") {
+          wantToRead.push(book);
+        } else if (book.shelf === "search") {
+          search.push(book);
+        } else if (book.shelf === "none") {
+          deletedBooks.push(book);
+        }
+      });
       this.setState({
-        currentlyReading: parsedAllBooks.currentlyReading,
-        read: parsedAllBooks.read,
-        wantToRead: parsedAllBooks.wantToRead,
-        deletedBooks: parsedAllBooks.deletedBooks,
-        bookListFromSearch: []
+        currentlyReading,
+        read,
+        wantToRead,
+        deletedBooks,
+        search
       });
-    } else {
-      getAll().then(books => {
-        books.forEach(book => {
-          if (book.shelf === "read") {
-            console.log("Before pushing to a read array ", read);
-            read.push(book);
-          } else if (book.shelf === "currentlyReading") {
-            currentlyReading.push(book);
-          } else if (book.shelf === "wantToRead") {
-            wantToRead.push(book);
-          } else if (book.shelf === "search") {
-            bookListFromSearch.push(book);
-          } else if (book.shelf === "none") {
-            deletedBooks.push(book);
-          }
-        });
-        this.setState({
-          currentlyReading,
-          read,
-          wantToRead,
-          deletedBooks,
-          bookListFromSearch
-        });
-      });
-    }
+    });
   }
+  // }
 
   /**
    * @param {number} bookId
-   * @param {string} currentShelf
-   * @param {string} newShelf
+   * @param {string} currentShelfName
+   * @param {string} newShelfName
    */
-  handleShelfChanger(bookId, currentShelf, newShelf) {
-    console.log("handleShelfChanger from - to:", currentShelf, newShelf);
+  handleShelfChanger(bookId, currentShelfName, newShelfName) {
+    console.log(
+      "handleShelfChanger from - to:",
+      currentShelfName,
+      newShelfName
+    );
 
-    if (currentShelf === newShelf) {
+    if (currentShelfName === newShelfName) {
       return;
     }
 
-    console.log("Book id ", bookId, currentShelf, newShelf);
+    console.log("Book id ", bookId, currentShelfName, newShelfName);
     console.log("This is our state ", this.state);
-
-    let shelfOfSelectedBook;
-
-    switch (currentShelf) {
-      case "currentlyReading":
-        shelfOfSelectedBook = this.state.currentlyReading;
-        break;
-      case "read":
-        shelfOfSelectedBook = this.state.read;
-        break;
-      case "wantToRead":
-        shelfOfSelectedBook = this.state.wantToRead;
-        break;
-      case "search":
-        shelfOfSelectedBook = this.state.bookListFromSearch;
-        break;
-
-      //in theory no book has a "none" shelf because we don't take it from a none shelf
-      // case "none":
-      //   shelfOfSelectedBook = this.state.deletedBooks;
-      //   break;
-      default:
-        return;
-    }
 
     const updatedShelves = this.moveBookBetweenShelves(
       bookId,
-      shelfOfSelectedBook,
-      newShelf
+      currentShelfName,
+      newShelfName
     );
 
-    this.setState({
-      [currentShelf]: updatedShelves.oldShelf,
-      [newShelf]: updatedShelves.newShelf
-    });
+    // this.setState({
+    //   [currentShelfName]: updatedShelves.oldShelf,
+    //   [newShelfName]: updatedShelves.newShelf
+    // });
 
     let NotyText = "";
-    if (newShelf === "none") {
+    if (newShelfName === "none") {
       NotyText = "Book has been deleted";
     } else {
       NotyText = "Book has been added to a shelf";
+    }
+
+    this.showSuccessMessage(NotyText, true);
+
+    // console.log("This is the array of the current book: ", shelfOfSelectedBook);
+  }
+
+  /**
+   * @param {string} NotyText
+   * @param {boolean} type
+   * type option: success, error
+   */
+  showSuccessMessage(NotyText, isSuccess) {
+    let type;
+    if (isSuccess) {
+      type = "success";
+    } else {
+      type = "error";
     }
     new Noty({
       text: `${NotyText}`,
       layout: "center",
       progressBar: false,
-      type: "success",
+      type: type,
       theme: "bootstrap-v4",
       timeout: 500,
       animation: {
@@ -142,8 +139,6 @@ class BooksApp extends React.Component {
         close: "animated fadeOut"
       }
     }).show();
-
-    console.log("This is the array of the current book: ", shelfOfSelectedBook);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -163,60 +158,78 @@ class BooksApp extends React.Component {
   /**
    * @param {number} bookId
    * @param {string} shelfOfSelectedBook
-   * @param {string} newShelf
+   * @param {string} newShelfName
    */
-  moveBookBetweenShelves(bookId, shelfOfSelectedBook, newShelf) {
-    if (shelfOfSelectedBook === newShelf) {
+  moveBookBetweenShelves(bookId, currentShelfName, newShelfName) {
+    //we check if the new shelf is the same as the old shelf
+
+    if (currentShelfName === newShelfName) {
       return;
     }
 
-    let shelfBookWillBeMovedTo = [];
-    let bookToChange = shelfOfSelectedBook.find(
+    let shelfOfSelectedBook;
+
+    if (this.state[currentShelfName]) {
+      shelfOfSelectedBook = this.state[currentShelfName];
+    } else {
+      console.log("Error when selecting the current shelf");
+      return;
+    }
+
+    //we get a shelf the book should be moved to
+
+    console.log("shelfBookWillBeMovedTo ", shelfBookWillBeMovedTo);
+
+    let shelfBookWillBeMovedTo = "";
+
+    if (this.state[newShelfName]) {
+      shelfBookWillBeMovedTo = this.state[newShelfName];
+    } else {
+      console.log("Error when selecting a new shelf");
+      return;
+    }
+
+    console.log("SHELF it will be moved into ", shelfBookWillBeMovedTo);
+
+    //we check if the book is already on the shelf
+
+    let filteredResult = "";
+
+    filteredResult = shelfBookWillBeMovedTo.filter(
       bookById => bookById.id === bookId
     );
 
-    bookToChange.shelf = newShelf;
-    //here all good. at this point, shelf gets set to "none"
+    if (filteredResult.length !== 0) {
+      this.showSuccessMessage("No", false);
+      return false;
+    } else {
+      let bookToChange = shelfOfSelectedBook.find(
+        bookById => bookById.id === bookId
+      );
 
-    console.log("Book I want to change:", bookToChange);
+      bookToChange.shelf = newShelfName;
+      //here all good. at this point, shelf gets set to "none"
 
-    let shelfWithoutSelectedBook = shelfOfSelectedBook.filter(
-      bookById => bookById.id !== bookId
-    );
+      console.log("Book I want to change:", bookToChange);
 
-    console.log("Book has been deleted", shelfWithoutSelectedBook);
-    console.log("About to move to 'none' shelf", this.state);
+      let shelfWithoutSelectedBook = shelfOfSelectedBook.filter(
+        bookById => bookById.id !== bookId
+      );
 
-    //at this point. if "none is selected", newShelf is "none"
-    switch (newShelf) {
-      case "currentlyReading":
-        shelfBookWillBeMovedTo = this.state.currentlyReading;
-        break;
-      case "read":
-        shelfBookWillBeMovedTo = this.state.read;
-        break;
-      case "wantToRead":
-        shelfBookWillBeMovedTo = this.state.wantToRead;
-        break;
-      case "search":
-        shelfBookWillBeMovedTo = this.state.bookListFromSearch;
-        break;
-      case "none":
-        shelfBookWillBeMovedTo = this.state.deletedBooks;
-        break;
-      default:
-        return;
+      shelfBookWillBeMovedTo.push(bookToChange);
+      console.log("Book has been deleted", shelfWithoutSelectedBook);
+      // console.log("About to move to 'none' shelf", this.state);
+      // return {
+      //   oldShelf: shelfWithoutSelectedBook,
+      //   newShelf: shelfBookWillBeMovedTo
+      // };
+
+      this.setState({
+        [currentShelfName]: shelfWithoutSelectedBook,
+        [newShelfName]: shelfBookWillBeMovedTo
+      });
     }
-
-    shelfBookWillBeMovedTo.push(bookToChange);
-    console.log("Book added to a new shelf ", shelfBookWillBeMovedTo);
-
-    return {
-      oldShelf: shelfWithoutSelectedBook,
-      newShelf: shelfBookWillBeMovedTo
-    };
   }
-
   /**
    * @param {object} event
    */
@@ -224,38 +237,50 @@ class BooksApp extends React.Component {
     e.preventDefault();
     e.persist();
     e.stopPropagation();
-    if (e.target.value == "") {
+    // reset the search page if search input field is empty
+
+    if (e.target.value === "") {
       console.log("Search input  field is empty");
-      this.setState({ emptyQuery: true, bookListFromSearch: [] });
+      this.resetSearchState();
+      return;
     }
+
+    // show results if there are at least 3 characters in the search input field
     if (e.target.value.length >= 3) {
       search(e.target.value)
         .then(results => {
           console.log("Results ", results);
           console.log("Event with results: ", e);
 
+          // handle incorrect search query
           if (results.error) {
             console.log("Event without results: ", e.target);
-            this.setState({
-              emptyQuery: true,
-              bookListFromSearch: []
-            });
+            this.resetSearchState();
           } else {
+            //else set the stare of search
             results.forEach(result => {
               result.shelf = "search";
             });
-            this.setState({ emptyQuery: false, bookListFromSearch: results });
+            this.setState({ search: results });
           }
 
           console.log(
             "This is out stare from handleSearchImputChange ",
-            this.state.bookListFromSearch
+            this.state.search
           );
-
-          console.log("Empty query: ", this.state.emptyQuery);
         })
         .catch(new Error("Something went wrong"));
     }
+  }
+
+  resetSearchState() {
+    this.setState({
+      search: []
+    });
+  }
+
+  handleOpenSearchButton() {
+    this.resetSearchState();
   }
 
   render() {
@@ -268,8 +293,8 @@ class BooksApp extends React.Component {
             <div>
               <Search
                 handleSearchImputChange={this.handleSearchImputChange}
-                results={this.state.bookListFromSearch}
-                searchStarted={this.state.emptyQuery}
+                results={this.state.search}
+                searchStarted={this.state.search.length === 0}
                 handleShelfChanger={this.handleShelfChanger}
               />
             </div>
@@ -303,7 +328,7 @@ class BooksApp extends React.Component {
               <div className="list-books-content">
                 <div />
               </div>
-              <OpenSearchButton />
+              <OpenSearchButton handleClick={this.handleOpenSearchButton} />
             </div>
           )}
         />
