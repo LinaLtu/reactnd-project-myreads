@@ -98,7 +98,8 @@ class BooksApp extends React.Component {
       let index = this.state.none.findIndex(book => book.id === bookId);
 
       if (index > -1) {
-        this.state.none.splice(index, 1);
+        let none = [...this.state.none];
+        none.splice(index, 1);
 
         this.setState({
           none: this.state.none
