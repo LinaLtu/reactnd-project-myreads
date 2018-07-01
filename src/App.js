@@ -85,15 +85,15 @@ class BooksApp extends React.Component {
     // If moving a book from the search, check whether the book is already in one of our allShelves
 
     if (currentShelfName === "search") {
-      let searchedBook = this.state.currentlyReading
-        .concat(this.state.read)
-        .concat(this.state.wantToRead)
-        .find(book => book.id === bookId);
+      // let searchedBook = this.state.currentlyReading
+      //   .concat(this.state.read)
+      //   .concat(this.state.wantToRead)
+      //   .find(book => book.id === bookId);
 
-      if (searchedBook) {
-        this.showSuccessMessage("This book is already in your library", false);
-        return false;
-      }
+      // if (searchedBook) {
+      //   this.showSuccessMessage("This book is already in your library", false);
+      //   return false;
+      // }
 
       let index = this.state.none.findIndex(book => book.id === bookId);
 
@@ -240,9 +240,14 @@ class BooksApp extends React.Component {
           if (results.error) {
             this.resetSearchState();
           } else {
-            //else set the stare of search
+            // else set the stare of search
+            const allBooksList = this.state.currentlyReading
+              .concat(this.state.read)
+              .concat(this.state.wantToRead);
+
             results.forEach(result => {
-              result.shelf = "search";
+              const book = allBooksList.find(book => result.id === book.id);
+              result.shelf = book ? book.shelf : "search";
             });
             this.setState({ search: results });
           }
